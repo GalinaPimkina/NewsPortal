@@ -1,0 +1,75 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Новости
+{% endblock title %}
+
+{% block content %}
+    <h3 align="right">Новостей на странице: {{posts|length}}</h3>
+    <hr>
+    {% if perms.news.add_post %}
+        <h5 align="right"><a href="{% url 'post_create' %}">Добавить статью</a></h5>
+    {% endif %}
+
+    {% if posts %}
+        <table align="left" cellpadding="7"  width="100%">
+            <tr>
+                <td><h4>Дата публикации</h4></td>
+                <td><h4>Заголовок</h4></td>
+                <td><h4>Содержание</h4></td>
+
+                {% if perms.news.change_post or perms.news.delete_post %}
+                <td><h4>Действия</h4></td>
+                {% endif %}
+            </tr>
+
+            {% for post in posts %}
+                <tr>
+                    <td>{{ post.time_create|date:'d E Y  H:i:s' }}</td>
+                    <td align="left">{{ post.title }}</td>
+                    <td align="left">{{ post.text|truncatewords:20 }}</td>
+
+                    <td>
+                        {% if perms.news.change_post %}
+                        <a href="{% url 'post_update' pk=post.id %}">Изменить</a>
+                        {% endif %}
+                        {% if perms.news.delete_post %}
+                        <a href="{% url 'post_delete' post.id %}">Удалить</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Новостей нет</h2>
+    {% endif %}
+
+{% if page_obj.has_other_pages %}
+<nav class="list-pages">
+    <ul>
+        {% if page_obj.number != 1 %}
+            <li>
+                <a href="?page=1">К началу</a>
+            </li>
+        {% endif %}
+
+        {% for p in paginator.page_range %}
+            {% if p >= page_obj.number|add:-1 and p <= page_obj.number|add:1 %}
+            <li>
+                <a href="?page={{ p }}">{{ p }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.number != paginator.num_pages %}
+            <li>
+                <a href="?page={{ paginator.num_pages }}">В конец</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock content %}
+
+

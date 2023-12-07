@@ -1,0 +1,64 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Поиск
+{% endblock title %}
+
+{% block content %}
+
+<form action="" method="get">
+    {{ filterset.form.as_p }}
+    <input type="submit" value="Найти" />
+</form>
+
+    <h3 align="right">Новостей на странице: {{postsearch|length}}</h3>
+    <hr>
+    {% if postsearch %}
+        <table align="left" cellpadding="7"  width="100%">
+            <tr>
+                <td><h4>Дата публикации</h4></td>
+                <td align="left"><h4>Заголовок</h4></td>
+                <td align="left"><h4>Содержание</h4></td>
+            </tr>
+
+            {% for post in postsearch %}
+            <tr>
+                <td>{{ post.time_create|date:'d E Y  H:i:s' }}</td>
+                <td align="left">{{ post.title }}</td>
+                <td align="left">{{ post.text|truncatewords:20 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Новостей нет</h2>
+    {% endif %}
+
+{% if page_obj.has_other_pages %}
+<nav class="list-pages">
+    <ul>
+        {% if page_obj.number != 1 %}
+            <li>
+                <a href="?{% url_replace page=1 %}">К началу</a>
+            </li>
+        {% endif %}
+
+        {% for p in paginator.page_range %}
+            {% if p >= page_obj.number|add:-1 and p <= page_obj.number|add:1 %}
+            <li>
+                <a href="?{% url_replace page=p%}">{{ p }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.number != paginator.num_pages %}
+            <li>
+                <a href="?{% url_replace page=paginator.num_pages %}">В конец</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock content %}
