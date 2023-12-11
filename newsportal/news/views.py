@@ -1,6 +1,5 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef
 from django.shortcuts import render
@@ -34,7 +33,6 @@ class PostSearch(ListView):
     paginate_by = 5
     extra_context = {'title': 'Поиск'}
     ordering = '-time_create'
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
