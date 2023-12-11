@@ -1,11 +1,15 @@
 {% extends 'flatpages/default.html' %}
+{% load cache %}
 
 {% block title %}
 Новости
 {% endblock title %}
 
+
 {% block content %}
-    <h3 align="right">Новостей на странице: {{posts|length}}</h3>
+    {% cache 60 news %}
+        <h3 align="right">Новостей на странице: {{posts|length}}</h3>
+    {% endcache news %}
     <hr>
     {% if perms.news.add_post %}
         <h5 align="right"><a href="{% url 'post_create' %}">Добавить статью</a></h5>
