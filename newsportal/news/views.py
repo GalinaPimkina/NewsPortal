@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -23,7 +24,14 @@ class PostText(DetailView):
     model = Post
     template_name = 'posttext.html'
     context_object_name = 'posttext'
-    extra_context = {'title': 'Подробнее...'}
+    queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'product-{self.kwargs["pk"]}', None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'product-{self.kwargs["pk"]}', obj)
+            return obj
 
 
 class PostSearch(ListView):
